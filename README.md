@@ -1,8 +1,9 @@
 # ⚡️ Bill Splitter App
 
 A smart and simple electricity bill calculator built with **Next.js**, **Tailwind CSS**, and **Prisma**! Perfect for apartments or buildings with shared electricity meters. 🔌💡
-
 ---
+
+https://github.com/user-attachments/assets/3fd9a877-d018-4a8c-b25f-28ef317e6e5d
 
 ## 🚀 Features
 
@@ -79,6 +80,10 @@ pnpm run dev
 
 
 ## 💡 Future Ideas
+
+
+
+
 
 - 🧾 PDF export of results
 -  💬E-mail service intigration
