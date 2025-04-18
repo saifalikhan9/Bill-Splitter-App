@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚡️ Bill Splitter App
 
-## Getting Started
+A smart and simple electricity bill calculator built with **Next.js**, **Tailwind CSS**, and **Prisma**! Perfect for apartments or buildings with shared electricity meters. 🔌💡
 
-First, run the development server:
+---
+
+## 🚀 Features
+
+- 🔢 Input **master meter reading** and individual **flat readings**
+- 💸 Calculates each flat’s share of the bill based on consumption
+- 🧠 Smart validation (no more over-counting!)
+- 📥 Save results to your database
+- 🔐 Secure authentication using **NextAuth.js** with credentials provider
+- 🎨 Beautiful UI with **Tailwind CSS** and reusable components
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js](https://nextjs.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Database ORM**: [Prisma](https://www.prisma.io/)
+- **Authentication**: [NextAuth.js](https://next-auth.js.org/)
+- **Hosting**: (e.g. Vercel, Railway – _your choice!_)
+
+---
+
+## 🧮 How It Works
+
+1. Enter the **master meter reading**
+2. Add readings for each **flat**
+3. The app:
+   - Calculates total usage
+   - Determines each flat’s usage
+   - Splits the master bill accordingly
+4. Click "Save" to persist the result 🔒
+
+---
+
+## 📦 Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/saifalikhan9/Bill-Splitter-App.git
+cd bill-splitter-app
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Set up your environment variables (see `.env.sample`):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+AUTH_SECRET="" # Added by `npx auth`. Read more: https://cli.authjs.dev
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Google OAuth
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
 
-## Learn More
+# Email Configuration
+NEXTAUTH_URL="http://localhost:3000"
+OWNER_EMAIL="your-owner-email@gmail.com"
+OWNER_EMAIL_PASSWORD="your-app-password" 
+EMAIL_SERVICE="gmail"
 
-To learn more about Next.js, take a look at the following resources:
+DATABASE_URL="postgresql://neondb_owner:"
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Then run the app locally:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+pnpm run dev
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🧪 Example
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+![alt text](image.png)
+---
+
+
+
+## 💡 Future Ideas
+
+- 🧾 PDF export of results
+-  💬E-mail service intigration
+- 📱 Responsive mobile UI
+
+---
+
+## 🙌 Contributing
+
+Pull requests are welcome! For major changes, please open an issue first to discuss what you’d like to change.
+
+---
+
+## 📜 License
+
+[MIT](LICENSE)
+
+---
+
+## 🌟 Acknowledgments
+
+Thanks to the open-source community and tools that made this possible! ❤️
