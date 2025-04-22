@@ -23,8 +23,8 @@ export async function DELETE(
 
   const flatmate = await prisma.user.findFirst({
     where: {
-      id: Number(id),
-      ownerId: Number(user.id),
+      id: id,
+      ownerId: user.id,
       role: "FLATMATE",
     },
   });
@@ -38,7 +38,7 @@ export async function DELETE(
 
   // Delete the flatmate record
   await prisma.user.delete({
-    where: { id: Number(id) },
+    where: { id},
   });
 
   return NextResponse.json({

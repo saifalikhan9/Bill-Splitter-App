@@ -11,7 +11,7 @@ export async function GET() {
     }
     
     const billDetails = await prisma.billDetail.findMany({
-      where: { userId: Number(user.id) },
+      where: { userId: (user.id) },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,

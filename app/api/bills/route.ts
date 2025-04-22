@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     
     const newBill = await prisma.bill.create({
       data: {
-        ownerId: Number(session.user.id),
+        ownerId: (session.user.id),
         masterReading : data.masterReading,
         actualBill: data.actualBill,
         details: {
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
             name: d.name,
             reading: d.reading,
             Amount: d.amount,
-            userId: Number( d.id),
+            userId: ( d.id),
           })),
         },
       },
@@ -87,7 +87,7 @@ export async function GET() {
     }
 
     const bills = await prisma.bill.findMany({
-      where: { ownerId: Number(user.id) },
+      where: { ownerId: (user.id) },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,

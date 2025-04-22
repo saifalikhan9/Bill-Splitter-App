@@ -14,18 +14,24 @@ async function handler(req: NextRequest) {
 
     // Verify user role - only owners can create flatmates
     if (user.role !== "OWNER") {
-      return NextResponse.json({ 
-        message: "Forbidden: Only owners can create flatmates" 
-      }, { status: 403 });
+      return NextResponse.json(
+        {
+          message: "Forbidden: Only owners can create flatmates",
+        },
+        { status: 403 }
+      );
     }
 
     // Validate request method
     if (req.method !== "POST") {
-      return NextResponse.json({ message: "Method not allowed" }, { status: 405 });
+      return NextResponse.json(
+        { message: "Method not allowed" },
+        { status: 405 }
+      );
     }
 
     // Parse and validate request body
-    const body = await req.json();    
+    const body = await req.json();
     const { email, password, name } = body;
 
     if (!email || !password || !name) {
@@ -50,7 +56,7 @@ async function handler(req: NextRequest) {
     await prisma.invitationToken.create({
       data: {
         token: invitationLink,
-        ownerId: Number(user.id),
+        ownerId: user.id,
       },
     });
 
@@ -64,23 +70,28 @@ async function handler(req: NextRequest) {
         password: hashedPassword,
         name,
         role: "FLATMATE",
-        ownerId: Number(user.id),
+        ownerId: user.id,
       },
     });
 
-    return NextResponse.json({
-      message: "Flatmate created and invitation token generated.",
-      flatmate,
-      token: invitationLink,
-    }, { status: 201 });
-
+    return NextResponse.json(
+      {
+        message: "Flatmate created and invitation token generated.",
+        flatmate,
+        token: invitationLink,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error creating flatmate:", error);
-    return NextResponse.json({
-      message: "Internal Server Error",
-      error: (error as Error)?.message || error,
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        message: "Internal Server Error",
+        error: (error as Error)?.message || error,
+      },
+      { status: 500 }
+    );
   }
 }
 
-export {handler as POST}
+export { handler as POST };

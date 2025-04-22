@@ -15,7 +15,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
   try {
     const user = await prisma.user.update({
-      where: { id: id as number },
+      where: { id: id as  },
       data: { name, email },
     });
     if (!user) {

@@ -5,15 +5,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sessionAuth } from "@/lib/sessionAuth";
 
-
 export async function GET() {
-  const {user ,status} = await sessionAuth()
-
-
-
+  const { user, status } = await sessionAuth();
 
   // @ts-ignore
-  
 
   if (!user && status === "unauthenticated") {
     return NextResponse.json({
@@ -31,9 +26,17 @@ export async function GET() {
   }
 
   const userData = await prisma.user.findUnique({
-    where: { id: Number(user?.id) },
+    where: { id: user?.id },
     select: {
-      flatmates: true,
+      flatmates: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          ownerId: true,
+          createdAt: true,
+        },
+      },
     },
   });
 
@@ -41,8 +44,6 @@ export async function GET() {
     return NextResponse.json({ message: "User not found", status: 404 });
   }
 
-  console.log(userData,"userdata");
-  
 
   return NextResponse.json({ message: "Success", status: 200, data: userData });
 }
