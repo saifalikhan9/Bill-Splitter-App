@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { sessionAuth } from "@/lib/sessionAuth";
 import { NextRequest, NextResponse } from "next/server";
 
-import { generateAndSendBillPDF } from "@/lib/billService";
 
 export async function POST(req: NextRequest) {
   try {
@@ -52,16 +51,6 @@ const {name,email} = session.user
 if (!name || !email) {
   throw new Error("email and name is not found")
 }
-    try {
-      await generateAndSendBillPDF(
-        newBill,
-        email as string,
-        name as string
-      );
-    } catch (emailError) {
-      console.error("Error sending bill emails:", emailError);
-      // Continue with the response even if email sending fails
-    }
 
     return NextResponse.json({ bill: newBill }, { status: 201 });
   } catch (error) {

@@ -7,7 +7,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   if (!session) {
     return new Response("Unauthorized", { status: 401 });
   } 
-  const { id  } : {id: unknown} = params;
+  const { id  } : {id: string} = params;
   const body = await req.json();
   const { name, email } = body;
   if (!name || !email) {
@@ -15,7 +15,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
   try {
     const user = await prisma.user.update({
-      where: { id: id as  },
+      where: { id: id  },
       data: { name, email },
     });
     if (!user) {
