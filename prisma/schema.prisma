@@ -14,32 +14,36 @@ enum UserRole {
 
 // NextAuth required models
 model Account {
-  id                 String  @id @default(cuid())
-  userId             Int
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? @db.Text
+  refresh_token_expires_in Int?
+  access_token             String? @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? @db.Text
+  session_state            String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+user User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
+
 
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
-  userId       Int
+  userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
 
+  @@index([userId])
+}
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -49,7 +53,7 @@ model VerificationToken {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
+  id            String   @id @default(cuid())
   name          String
   email         String    @unique
   password      String?   // Store a hashed password (make it optional for OAuth users)
@@ -62,13 +66,6 @@ model User {
   accounts Account[]
   sessions Session[]
 
-  // OAuth2 Email fields
-  emailProvider       String?  // e.g., "gmail", "outlook"
-  emailAccessToken    String?  @db.Text // Can be long
-  emailRefreshToken   String?  @db.Text // Store securely
-  emailTokenExpiry    DateTime?
-  emailAuthorized     Boolean  @default(false)
-
   // For owners: a list of bills they create
   bills Bill[]
 
@@ -77,7 +74,7 @@ model User {
 
   // Self-relation to associate flatmates with their owner.
   // For a flatmate, this field points to the owner's id.
-  ownerId   Int?
+  ownerId   String?
   owner     User?  @relation("OwnerFlatmates", fields: [ownerId], references: [id], onDelete: SetNull)
   flatmates User[] @relation("OwnerFlatmates")
 
@@ -91,7 +88,7 @@ model User {
 model InvitationToken {
   id        Int      @id @default(autoincrement())
   token     String   @unique
-  ownerId   Int
+  ownerId   String
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
 
@@ -106,7 +103,7 @@ model FlatmateInvitation {
   phone     String?
   token     String   @unique
   expiresAt DateTime @map("expires_at")
-  ownerId   Int      @map("owner_id")
+  ownerId   String      @map("owner_id")
   createdAt DateTime @default(now())
 
   // Relation to the owner who created the invitation
@@ -118,7 +115,7 @@ model FlatmateInvitation {
 
 model Bill {
   id            Int          @id @default(autoincrement())
-  ownerId       Int          // The user (owner) who created this bill
+  ownerId       String          // The user (owner) who created this bill
   masterReading Float
   actualBill    Float
   createdAt     DateTime     @default(now())
@@ -132,7 +129,7 @@ model BillDetail {
   name      String
   reading   Float
   Amount    Float
-  userId    Int
+  userId    String
   createdAt DateTime @default(now())
   bill      Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
   user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
