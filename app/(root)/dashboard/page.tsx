@@ -8,7 +8,6 @@ import { sessionAuth } from "@/lib/sessionAuth";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -19,7 +18,7 @@ const Page = async () => {
   const { user, status } = await sessionAuth();
 
   const data = await prisma.bill.findMany({
-    where: { ownerId: Number(user?.id) },
+    where: { ownerId: user?.id},
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
@@ -33,10 +32,10 @@ const Page = async () => {
 
   if (user?.role === "FLATMATE") {
     const data = await prisma.billDetail.findMany({
-      where: { userId: Number(user?.id) },
+      where: { userId: user?.id },
       orderBy: { createdAt: "desc" },
     });
-    console.log(data, "flatmate");
+  
 
     return (
       <div className="relative w-full ">

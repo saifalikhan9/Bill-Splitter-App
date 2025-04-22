@@ -15,8 +15,8 @@ interface FlatDetails {
 
 interface Datatype {
   name: string;
-  id: number;
-  ownerId: number | null;
+  id: string;
+  ownerId: string | null;
 }
 
 export default function Calculator({
@@ -112,25 +112,31 @@ export default function Calculator({
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto">
+
+    <Card >
       <CardContent className="p-4 space-y-4">
         <h2 className="text-xl font-semibold">Actual Bill Amount (₹):</h2>
         <Input
           type="number"
+          placeholder="Enter the actual bill amount"
+          className="mb-4"
           value={actualBill}
           onChange={(e) => setActualBill(e.target.value)}
           step="0.01"
           min="0"
-        />
+          />
 
         <h2 className="text-xl font-semibold">Master Meter Reading (units):</h2>
         <Input
           type="number"
+          placeholder="Enter the master meter reading"
+          className="mb-4"
           value={masterReading}
           onChange={(e) => setMasterReading(e.target.value)}
           step="0.01"
           min="0"
-        />
+          />
 
         <h2 className="text-xl font-semibold">Enter Flat Readings:</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -145,15 +151,16 @@ export default function Calculator({
                 }
                 step="1"
                 min="0"
-              />
+                />
             </div>
           ))}
         </div>
 
         <Button variant="default" onClick={handleCalculate} className="w-full mt-4">
-          Calculate Bills
+          Calculate Bill
         </Button>
       </CardContent>
     </Card>
+          </div>
   );
 }

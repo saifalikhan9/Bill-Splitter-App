@@ -210,9 +210,7 @@ export default function ProfilePage() {
             <TabsList className="mb-4">
               <TabsTrigger value="profile">Profile Details</TabsTrigger>
               <TabsTrigger value="password">Change Password</TabsTrigger>
-              {user?.role === "OWNER" && (
-                <TabsTrigger value="email">Email Authorization</TabsTrigger>
-              )}
+              
             </TabsList>
             
             <TabsContent value="profile">
@@ -295,71 +293,6 @@ export default function ProfilePage() {
                 </Button>
               </form>
             </TabsContent>
-            
-            {user?.role === "OWNER" && (
-              <TabsContent value="email">
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-medium">Email Authorization Status</h3>
-                    <p className="text-sm text-gray-500">
-                      Authorize your email account to send bills directly to your flatmates.
-                    </p>
-                    
-                    <div className="flex items-center space-x-2 mt-2">
-                      {emailAuthorized ? (
-                        <>
-                          <CheckCircle className="text-green-500" />
-                          <span>Your email is authorized for sending bills</span>
-                        </>
-                      ) : (
-                        <>
-                          <AlertCircle className="text-amber-500" />
-                          <span>Email not authorized</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <p className="text-sm">
-                      {emailAuthorized
-                        ? "You can revoke the authorization at any time."
-                        : "Authorize your Google account to send emails through this application."}
-                    </p>
-                    
-                    {emailAuthorized ? (
-                      <Button 
-                        variant="destructive" 
-                        onClick={handleRevokeEmailAuth}
-                        disabled={loading}
-                      >
-                        Revoke Authorization
-                      </Button>
-                    ) : (
-                      <Button 
-                        onClick={handleAuthorizeEmail}
-                        disabled={loading}
-                      >
-                        <Mail className="mr-2 h-4 w-4" />
-                        Authorize Email
-                      </Button>
-                    )}
-                  </div>
-                  
-                  <div className="mt-4 p-4 bg-gray-50 rounded-md text-sm">
-                    <h4 className="font-medium mb-2">About Email Authorization</h4>
-                    <p className="mb-2">
-                      When you authorize your email, you're giving this application permission to:
-                    </p>
-                    <ul className="list-disc pl-5 space-y-1">
-                      <li>Send emails on your behalf</li>
-                      <li>Your login credentials are never stored</li>
-                      <li>Uses secure OAuth2 authentication with Google</li>
-                    </ul>
-                  </div>
-                </div>
-              </TabsContent>
-            )}
           </Tabs>
         </CardContent>
       </Card>

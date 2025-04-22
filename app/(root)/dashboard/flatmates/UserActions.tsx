@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 type User = {
-  id: number;
+  id: string;
   name: string;
   email: string;
 };

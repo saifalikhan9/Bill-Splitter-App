@@ -6,6 +6,7 @@ import React from "react";
 
 export default async function page() {
   const { user, status } = await sessionAuth();
+  
 
   if (status === "unauthenticated") {
     redirect("/signin");
@@ -17,7 +18,7 @@ export default async function page() {
   }
 
   const res = await prisma.user.findUnique({
-    where: { id: Number(user?.id) },
+    where: { id: (user?.id) },
     select: { flatmates: {select: {id:true, name:true, ownerId:true}} },
   });
 
@@ -27,12 +28,9 @@ export default async function page() {
   
   const data = res?.flatmates;
 
-  if (!data) {
-    return;
-  }
 
   return (
-    <div className="flex flex-col justify-center items-center m-3 p-3">
+    <div className="flex flex-col justify-center w-full items-center m-3 p-3">
       <Calculator data={data} Owner={user} />
     </div>
   );
