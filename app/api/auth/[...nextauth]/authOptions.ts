@@ -62,21 +62,42 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt", },
 
   callbacks: {
-    
-    jwt: async ({ token, user, account }: {token: JWT, user?: User | AdapterUser | UserProps, account?: Account | null}) => {
-      if (user  && 'role' in user) {
+    async jwt({ token, user, account, isNewUser }) {
+      // If it's the first sign in (e.g., via Google), assign a default role
+      if (user && account?.provider === "google") {
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email! },
+        });
+  
+        // Assign default role only if user doesn't already have one
+        if (!existingUser?.role) {
+          await prisma.user.update({
+            where: { email: user.email! },
+            data: { role: "OWNER" },
+          });
+          token.role = "OWNER";
+        } else {
+          token.role = existingUser.role;
+        }
+  
+        token.id = existingUser?.id || user.id;
+        token.email = user.email;
+      }
+  
+      if (user && 'role' in user) {
+        token.role = user.role;
         token.id = user.id;
         token.email = user.email;
-        token.role = user.role; // This will pick up the OWNER role set by the default
       }
-      
+  
       if (account?.provider === 'google') {
         token.accessToken = account.access_token;
       }
-      
+  
       return token;
     },
-    session: async ({ session, token }) => {
+  
+    async session({ session, token }) {
       session.user = {
         name: token.name as string,
         image: token.picture as string,
@@ -85,6 +106,7 @@ export const authOptions: NextAuthOptions = {
         email: token.email as string,
       } as UserProps;
       return session;
-    },  
-  },
+    }
+  }
+  
 };
