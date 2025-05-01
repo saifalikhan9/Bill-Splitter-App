@@ -7,9 +7,6 @@ import { JWT } from "next-auth/jwt";
 import { AdapterUser } from "next-auth/adapters";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 
-
-
-
 export interface UserProps {
   id: string;
   name: string;
@@ -17,8 +14,6 @@ export interface UserProps {
   image: string;
   role: string;
 }
-
-
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -43,7 +38,7 @@ export const authOptions: NextAuthOptions = {
         if (!isValid) throw new Error("Invalid password");
 
         return {
-          id: user.id as string,
+          id: user.id,
           email: user.email,
           name: user.name,
           image: user.image,
@@ -56,47 +51,35 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
     signOut: "/signout",
-    error: "/login",
+    error: "/error",
   },
 
-  session: { strategy: "jwt", },
+  session: { strategy: "jwt" },
 
   callbacks: {
-    
-    jwt: async ({ token, user, account }: {token: JWT, user?: User | AdapterUser | UserProps, account?: Account | null}) => {
-     
-      if (user && account?.provider === "google") {
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email! },
-        });
-  
-        // Assign default role only if user doesn't already have one
-        if (!existingUser?.role) {
-          await prisma.user.update({
-            where: { email: user.email! },
-            data: { role: "OWNER" },
-          });
-          token.role = "OWNER";
-        } else {
-          token.role = existingUser.role;
-        }
-  
-        token.id = existingUser?.id || user.id;
-        token.email = user.email;
-      }
-     
-      if (user  && 'role' in user) {
+    jwt: async ({
+      token,
+      user,
+      account,
+    }: {
+      token: JWT;
+      user?: User | AdapterUser | UserProps;
+      account?: Account | null;
+    }) => {
+      // Populate token on sign-in
+      if (user) {
         token.id = user.id;
         token.email = user.email;
-        token.role = user.role; // This will pick up the OWNER role set by the default
+        token.role = (user as any).role || "OWNER"; // Fallback if somehow missing
       }
-      
-      if (account?.provider === 'google') {
+
+      if (account?.provider === "google") {
         token.accessToken = account.access_token;
       }
-      
+
       return token;
     },
+
     session: async ({ session, token }) => {
       session.user = {
         name: token.name as string,
@@ -106,6 +89,6 @@ export const authOptions: NextAuthOptions = {
         email: token.email as string,
       } as UserProps;
       return session;
-    },  
+    },
   },
 };

@@ -7,7 +7,6 @@ enum StatusType {
 }
 export const sessionAuth = async () => {
   const session = await getServerSession(authOptions);
-
   if (!session?.user) {
     return {status : StatusType.Unauthenticated , user : null}
   }

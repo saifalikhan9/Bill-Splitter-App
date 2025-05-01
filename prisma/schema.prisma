@@ -57,7 +57,7 @@ model User {
   name          String
   email         String    @unique
   password      String?   // Store a hashed password (make it optional for OAuth users)
-  role          UserRole  @default(FLATMATE)
+  role          UserRole  @default(OWNER)
   createdAt     DateTime  @default(now())
   image         String?
   emailVerified DateTime?  // Required by NextAuth for OAuth providers
