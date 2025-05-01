@@ -27,7 +27,9 @@ export default async function DashBoardLayout({
         </main>
       </div>
       <div className="fixed bottom-0 left-0 right-0 z-20 flex justify-center sm:hidden  border-t border-muted/40 py-2">
-        <FloatingNav
+
+{userRole === "OWNER" && (<>
+  <FloatingNav
           navItems={[
             {
               name: "Dashboard",
@@ -51,6 +53,25 @@ export default async function DashBoardLayout({
             },
           ]}
         />
+</>)}
+
+        {userRole === "FLATMATE" && (<>
+          <FloatingNav
+          navItems={[
+            {
+              name: "Dashboard",
+              link: "/dashboard",
+              icon: <Home className="h-5 w-5" />,
+            },
+            {
+              name: "Profile",
+              link: "/dashboard/profile",
+              icon: <UserIcon className="h-5 w-5" />,
+            },
+          ]}
+        />
+        </>)}
+
       </div>
     </main>
   );
