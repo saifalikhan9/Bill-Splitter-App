@@ -67,10 +67,10 @@ export const authOptions: NextAuthOptions = {
       account?: Account | null;
     }) => {
       // Populate token on sign-in
-      if (user) {
+      if (user && "role" in user) {
         token.id = user.id;
         token.email = user.email;
-        token.role = (user as any).role || "OWNER"; // Fallback if somehow missing
+        token.role = user?.role || "OWNER"; // Fallback if somehow missing
       }
 
       if (account?.provider === "google") {
