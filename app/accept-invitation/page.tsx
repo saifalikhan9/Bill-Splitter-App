@@ -36,7 +36,17 @@ export default function AcceptInvitation() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(true);
   const [validating, setValidating] = useState(true);
-  const [invitation, setInvitation] = useState<any>(null);
+  
+  interface Invitation {
+    id: number;
+    email: string;
+    name: string;
+    token: string;
+    ownerName: string;
+    expiresAt: string;
+  }
+  
+  const [invitation, setInvitation] = useState<Invitation | null>(null);
 
   const form = useForm<z.infer<typeof flatmateSchema>>({
     resolver: zodResolver(flatmateSchema),
@@ -107,9 +117,10 @@ export default function AcceptInvitation() {
 
       toast.success("Account created successfully!");
       router.push("/signin");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error accepting invitation:", error);
-      toast.error(error.message || "Failed to create account");
+      const err = error as Error;
+      toast.error(err.message || "Failed to create account");
     } finally {
       setLoading(false);
     }
@@ -134,7 +145,7 @@ export default function AcceptInvitation() {
             <CardDescription className="text-sm md:text-base mt-2">
               {invitation && (
                 <>
-                  You've been invited by <strong>{invitation.ownerName}</strong>{" "}
+                  You&apos;ve been invited by <strong>{invitation.ownerName}</strong>{" "}
                   to join as a flatmate. Please set your password to create your
                   account.
                 </>

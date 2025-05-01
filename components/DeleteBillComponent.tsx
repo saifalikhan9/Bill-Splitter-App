@@ -5,21 +5,19 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 interface BillDetail {
-  id: number;
+  id: string;
   reading: number;
   Amount: number;
   name: string;
-  // Add other fields from BillDetail if needed.
 }
 
 interface Bill {
-  id: number;
-  ownerId: number;
+  id: string;
+  ownerId: string;
   masterReading: number;
   actualBill: number;
   createdAt: string;
   details: BillDetail[];
-  // Add additional fields if needed.
 }
 
 interface DeleteBillComponentProps {
@@ -31,7 +29,7 @@ export default function DeleteBillComponent({
 }: DeleteBillComponentProps) {
   const [billList, setBillList] = useState(bills);
 
-  const deleteBill = async (billId: number) => {
+  const deleteBill = async (billId: string) => {
     const confirmed = confirm("Are you sure you want to delete this bill?");
     if (!confirmed) return;
 
@@ -42,9 +40,12 @@ export default function DeleteBillComponent({
       // Remove the deleted bill from the UI.
       setBillList((prev) => prev.filter((bill) => bill.id !== billId));
       toast.success("Bill deleted successfully");
-    } catch (error: any) {
-      console.error("Error deleting bill:", error);
-      toast.error(error.message || "Failed to delete bill");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     }
   };
 

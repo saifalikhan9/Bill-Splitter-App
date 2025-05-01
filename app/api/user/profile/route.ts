@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sessionAuth } from "@/lib/sessionAuth";
+import { userProfileType } from "@/lib/types"; // Adjust the import path as necessary
 
 // GET user profile
 export async function GET() {
@@ -11,7 +12,7 @@ export async function GET() {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const userData = await prisma.user.findUnique({
+    const userData : userProfileType | null = await prisma.user.findUnique({
       where: { id: user.id },
       select: {
         id: true,
@@ -44,7 +45,7 @@ export async function PUT(req: Request) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { name } = await req.json();
+    const { name  } = await req.json() as { name: string|null };
 
     // Validate input
     if (!name || !name.trim()) {
@@ -55,7 +56,7 @@ export async function PUT(req: Request) {
     }
 
     // Update user
-    const updatedUser = await prisma.user.update({
+    const updatedUser : userProfileType | null = await prisma.user.update({
       where: { id: user.id },
       data: { name },
       select: {

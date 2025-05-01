@@ -29,10 +29,18 @@ import {
 import Link from 'next/link'
 import { createAuthSchema } from "@/lib/types"
 
+// Define the form data type based on the authentication type
+interface AuthFormData {
+  email: string;
+  password: string;
+  name?: string;
+  confirmPassword?: string;
+}
+
 // Define the props for the AuthForm
 interface AuthFormProps {
   type: "signup" | "signin";
-  onSubmitForm: (data: any) => void; // Pass the submit handler as a prop
+  onSubmitForm: (data: AuthFormData) => void; // Pass the submit handler as a prop
   isLoading?: boolean; // Optional loading state for the button
 }
 
@@ -58,7 +66,7 @@ export function AuthForm({
   // Use the passed onSubmitForm handler
   function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log("Form Data:", data);
-    onSubmitForm(data); // Call the handler passed via props
+    onSubmitForm(data as AuthFormData); // Call the handler passed via props
   }
 
   const isSignup = type === "signup";
@@ -238,7 +246,7 @@ export function AuthForm({
               </p>
             ) : (
               <p className="mt-4 text-sm text-center">
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <Link href="/signup" className="text-blue-600 hover:underline">
                   Sign Up
                 </Link>

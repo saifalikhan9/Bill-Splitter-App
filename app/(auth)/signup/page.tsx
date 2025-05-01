@@ -5,9 +5,15 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { AuthenticatedUser } from "@/components/AuthenticatedUser";
 
+interface SignupData {
+  email: string;
+  password: string;
+  name?: string;
+}
+
 const SignUpPage = () => {
   const router = useRouter();
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: SignupData) => {
     try {
       const res = await fetch("/api/register", {
         method: "POST",
@@ -27,9 +33,10 @@ const SignUpPage = () => {
 
       toast.success(response.message || "User registered successfully!");
       router.push("/signin"); // Redirect to sign-in page after successful registration
-    } catch (e: any) {
-      toast.error(e.message || "Something went wrong. Please try again.");
-      console.error("Registration error:", e);
+    } catch (e: Error | unknown) {
+      const error = e as Error;
+      toast.error(error.message || "Something went wrong. Please try again.");
+      console.error("Registration error:", error);
     }
   };
 

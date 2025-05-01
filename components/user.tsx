@@ -25,7 +25,7 @@ interface user {
 
 export function User() {
   const { data: session } = useSession();
-  let user  = session?.user;
+  const user  = session?.user as user;
   if (user?.role==="FLATMATE") {
     return (
       <div>

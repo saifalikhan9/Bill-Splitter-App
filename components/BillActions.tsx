@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Button } from './ui/button';
-import { Loader2, Trash, MoreHorizontal, Eye } from 'lucide-react';
-import { toast } from 'sonner';
+import React, { useState } from "react";
+import { Button } from "./ui/button";
+import { Loader2, Trash, MoreHorizontal, Eye } from "lucide-react";
+import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import Link from 'next/link';
+import Link from "next/link";
 
 interface BillActionsProps {
   billId: number;
@@ -35,19 +35,23 @@ export default function BillActions({ billId, onDelete }: BillActionsProps) {
     try {
       setIsDeleting(true);
       const response = await fetch(`/api/bills/${billId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to delete bill');
+        throw new Error(error.message || "Failed to delete bill");
       }
 
-      toast.success('Bill deleted successfully');
+      toast.success("Bill deleted successfully");
       onDelete(); // Refresh the bill list
-    } catch (error: any) {
-      console.error('Error deleting bill:', error);
-      toast.error(error.message || 'Failed to delete bill');
+      //
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     } finally {
       setIsDeleting(false);
       setShowDeleteDialog(false);
@@ -70,7 +74,7 @@ export default function BillActions({ billId, onDelete }: BillActionsProps) {
               <span>View Details</span>
             </DropdownMenuItem>
           </Link>
-          <DropdownMenuItem 
+          <DropdownMenuItem
             className="text-destructive focus:text-destructive"
             onClick={() => setShowDeleteDialog(true)}
           >
@@ -85,13 +89,13 @@ export default function BillActions({ billId, onDelete }: BillActionsProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the bill
-              and all its associated data.
+              This action cannot be undone. This will permanently delete the
+              bill and all its associated data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
                 handleDelete();
@@ -105,7 +109,7 @@ export default function BillActions({ billId, onDelete }: BillActionsProps) {
                   Deleting...
                 </>
               ) : (
-                'Delete'
+                "Delete"
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -113,4 +117,4 @@ export default function BillActions({ billId, onDelete }: BillActionsProps) {
       </AlertDialog>
     </>
   );
-} 
+}

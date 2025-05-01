@@ -24,17 +24,24 @@ import Link from "next/link";
 
 const FormSchema = createFlatmateSchema();
 
+interface ExtendedUser {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  role?: string;
+}
+
 export default function AddFlatmateForm() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [loading, setLoading] = useState(true);
-  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     // Check if user is authorized
     if (status === "loading") return;
     
-    if (!session || session.user.role !== "OWNER") {
+    const user = session?.user as ExtendedUser | undefined;
+    if (!session || user?.role !== "OWNER") {
       toast.error("Only owners can add flatmates");
       router.push("/dashboard");
       return;
@@ -65,7 +72,6 @@ export default function AddFlatmateForm() {
         throw new Error(error || message || "Something went wrong");
       }
 
-      setSuccess(true);
       toast.success("Successfully added new Flatmate");
       form.reset();
       
@@ -73,8 +79,9 @@ export default function AddFlatmateForm() {
       setTimeout(() => {
         router.push("/dashboard/flatmates");
       }, 2000);
-    } catch (err: any) {
-      const message = err.message || "Failed";
+    } catch (err: unknown) {
+      const error = err as Error;
+      const message = error.message || "Failed";
       toast.error(message);
     }
   };

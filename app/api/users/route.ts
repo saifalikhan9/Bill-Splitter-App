@@ -8,8 +8,6 @@ import { sessionAuth } from "@/lib/sessionAuth";
 export async function GET() {
   const { user, status } = await sessionAuth();
 
-  // @ts-ignore
-
   if (!user && status === "unauthenticated") {
     return NextResponse.json({
       message: "User is not authenticated",

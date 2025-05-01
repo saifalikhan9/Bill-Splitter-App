@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { ArrowLeft, Copy, RefreshCw, Trash } from "lucide-react";
+import { ArrowLeft, Copy, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -72,9 +72,10 @@ export default function Invitations() {
       }
 
       setInvitations(data.invitations);
-    } catch (error: any) {
-      console.error("Error fetching invitations:", error);
-      toast.error(error.message || "Failed to fetch invitations");
+    } catch (error: unknown) {
+      const err = error as Error;
+      console.error("Error fetching invitations:", err);
+      toast.error(err.message || "Failed to fetch invitations");
     } finally {
       setLoading(false);
     }

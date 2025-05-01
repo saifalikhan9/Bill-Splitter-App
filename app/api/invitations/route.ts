@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { hash } from "bcrypt";
 import { sessionAuth } from "@/lib/sessionAuth";
 import crypto from "crypto";
 
@@ -52,7 +51,7 @@ export async function POST(req: Request) {
     expiresAt.setHours(expiresAt.getHours() + 48);
 
     // Create the invitation
-    const invitation = await prisma.flatmateInvitation.create({
+    await prisma.flatmateInvitation.create({
       data: {
         name,
         email,

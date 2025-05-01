@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 
 const Page = async () => {
-  const { user, status } = await sessionAuth();
+  const { user } = await sessionAuth();
 
   const data = await prisma.bill.findMany({
     where: { ownerId: user?.id},

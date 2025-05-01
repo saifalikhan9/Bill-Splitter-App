@@ -1,82 +1,72 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertCircle, CheckCircle, Mail } from "lucide-react";
-
+import { userProfileType } from "@/lib/types";
 export default function ProfilePage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [user, setUser] = useState<any>(null);
+
+  const [user, setUser] = useState<userProfileType>();
   const [loading, setLoading] = useState(true);
-  
-  // Email authorization status
-  const [emailAuthorized, setEmailAuthorized] = useState(false);
-  
-  // Check for email auth callback status
-  useEffect(() => {
-    const emailAuthStatus = searchParams.get("emailAuth");
-    if (emailAuthStatus) {
-      if (emailAuthStatus === "success") {
-        toast.success("Email authorized successfully!");
-        // Refresh the page to update the user data
-        router.replace("/dashboard/profile");
-      } else {
-        toast.error(`Email authorization failed: ${emailAuthStatus}`);
-      }
-    }
-  }, [searchParams, router]);
-  
-  // Profile form fields
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  
+
   // Password change fields
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
+
   // Fetch user data
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const response = await fetch("/api/user/profile");
-        const data = await response.json();
-        
+        const data = await response.json() as { user: userProfileType | null , message: string };
+
         if (!response.ok) {
           throw new Error(data.message || "Failed to fetch user profile");
         }
-        
+        if (!data.user) {
+          throw new Error("User not found");
+        }
+
         setUser(data.user);
-        setName(data.user.name);
-        setEmail(data.user.email);
-        
-        // Set email authorization status
-        setEmailAuthorized(data.user.emailAuthorized || false);
-      } catch (error: any) {
-        console.error("Error fetching profile:", error);
-        toast.error(error.message || "Failed to load profile");
+        setName(data?.user?.name);
+        setEmail(data?.user?.email);
+      } catch (error:  unknown) {
+        if (error instanceof Error) {
+          toast.error(error.message || "Failed to load profile");
+        } else {
+          toast.error("An unknown error occurred");
+        }
+      
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchUser();
   }, []);
-  
+
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!name.trim()) {
       toast.error("Name cannot be empty");
       return;
     }
-    
+
     try {
       setLoading(true);
       const response = await fetch("/api/user/profile", {
@@ -89,43 +79,49 @@ export default function ProfilePage() {
           email,
         }),
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.message || "Failed to update profile");
       }
-      
+
       toast.success("Profile updated successfully");
       // Refresh the page to see changes
       router.refresh();
-    } catch (error: any) {
-      console.error("Error updating profile:", error);
-      toast.error(error.message || "Failed to update profile");
+      //
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error updating profile:", error);
+        toast.error(error.message || "Failed to update profile");
+      } else {
+        toast.error("An unknown error occurred");
+      }
+     
     } finally {
       setLoading(false);
     }
   };
-  
+
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Basic validation
     if (!currentPassword || !newPassword || !confirmPassword) {
       toast.error("All password fields are required");
       return;
     }
-    
+
     if (newPassword !== confirmPassword) {
       toast.error("New passwords do not match");
       return;
     }
-    
+
     if (newPassword.length < 6) {
       toast.error("New password must be at least 6 characters long");
       return;
     }
-    
+
     try {
       setLoading(true);
       const response = await fetch("/api/user/password", {
@@ -138,56 +134,33 @@ export default function ProfilePage() {
           newPassword,
         }),
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.message || "Failed to change password");
       }
-      
+
       toast.success("Password updated successfully");
-      
+
       // Reset password fields
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-    } catch (error: any) {
-      console.error("Error changing password:", error);
-      toast.error(error.message || "Failed to change password");
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  // Function to initiate email authorization
-  const handleAuthorizeEmail = () => {
-    window.location.href = "/api/email-auth";
-  };
-  
-  // Function to revoke email authorization
-  const handleRevokeEmailAuth = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("/api/email-auth/revoke", {
-        method: "POST",
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to revoke email authorization");
+      //
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error changing password:", error);
+        toast.error(error.message || "Failed to change password");
+      } else {
+        toast.error("An unknown error occurred");
       }
-      
-      setEmailAuthorized(false);
-      toast.success("Email authorization revoked successfully");
-    } catch (error: any) {
-      console.error("Error revoking email authorization:", error);
-      toast.error(error.message || "Failed to revoke email authorization");
+ 
     } finally {
       setLoading(false);
     }
   };
-  
+
   if (loading && !user) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
@@ -195,7 +168,7 @@ export default function ProfilePage() {
       </div>
     );
   }
-  
+
   return (
     <div className="max-w-3xl w-full mx-auto">
       <Card>
@@ -210,9 +183,8 @@ export default function ProfilePage() {
             <TabsList className="mb-4">
               <TabsTrigger value="profile">Profile Details</TabsTrigger>
               <TabsTrigger value="password">Change Password</TabsTrigger>
-              
             </TabsList>
-            
+
             <TabsContent value="profile">
               <form onSubmit={handleProfileUpdate} className="space-y-4">
                 <div className="space-y-2">
@@ -224,7 +196,7 @@ export default function ProfilePage() {
                     disabled={loading}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Email</label>
                   <Input
@@ -235,9 +207,11 @@ export default function ProfilePage() {
                     disabled={true} // Email should not be editable
                     className="bg-gray-50"
                   />
-                  <p className="text-xs text-gray-500">Email address cannot be changed</p>
+                  <p className="text-xs text-gray-500">
+                    Email address cannot be changed
+                  </p>
                 </div>
-                
+
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Role</label>
                   <Input
@@ -246,17 +220,19 @@ export default function ProfilePage() {
                     className="bg-gray-50"
                   />
                 </div>
-                
+
                 <Button type="submit" disabled={loading}>
                   {loading ? "Updating..." : "Update Profile"}
                 </Button>
               </form>
             </TabsContent>
-            
+
             <TabsContent value="password">
               <form onSubmit={handlePasswordChange} className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Current Password</label>
+                  <label className="text-sm font-medium">
+                    Current Password
+                  </label>
                   <Input
                     type="password"
                     value={currentPassword}
@@ -265,7 +241,7 @@ export default function ProfilePage() {
                     disabled={loading}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <label className="text-sm font-medium">New Password</label>
                   <Input
@@ -276,9 +252,11 @@ export default function ProfilePage() {
                     disabled={loading}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Confirm New Password</label>
+                  <label className="text-sm font-medium">
+                    Confirm New Password
+                  </label>
                   <Input
                     type="password"
                     value={confirmPassword}
@@ -287,7 +265,7 @@ export default function ProfilePage() {
                     disabled={loading}
                   />
                 </div>
-                
+
                 <Button type="submit" disabled={loading}>
                   {loading ? "Updating..." : "Change Password"}
                 </Button>
@@ -298,4 +276,4 @@ export default function ProfilePage() {
       </Card>
     </div>
   );
-} 
+}

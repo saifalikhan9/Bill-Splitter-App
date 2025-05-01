@@ -1,4 +1,4 @@
-import { BillResult } from "@/contexts/CarculatorContext";
+
 import { prisma } from "@/lib/prisma";
 import { sessionAuth } from "@/lib/sessionAuth";
 import { NextRequest, NextResponse } from "next/server";

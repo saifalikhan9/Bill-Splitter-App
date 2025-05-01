@@ -7,8 +7,15 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { ArrowLeft, Plus } from "lucide-react";
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
 export default function BillsPage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,9 +31,10 @@ export default function BillsPage() {
         }
         
         setUser(userData.user);
-      } catch (error: any) {
-        console.error("Error fetching data:", error);
-        toast.error(error.message || "Failed to load user profile");
+      } catch (error: unknown) {
+        const err = error as Error;
+        console.error("Error fetching data:", err);
+        toast.error(err.message || "Failed to load user profile");
       } finally {
         setLoading(false);
       }

@@ -61,4 +61,10 @@ export interface billstype {
     userId: number;
   }[];
 }
-[];
+
+export interface userProfileType{
+id : string;
+name : string;
+email : string;
+role : "OWNER"|"FLATMATE";
+}

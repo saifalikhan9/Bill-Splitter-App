@@ -7,7 +7,7 @@ export interface BillResult {
   name: string;
   reading: number;
   amount: number;
-  id: number;
+  id: string;
 }
 
 interface CalculatorContextType {
@@ -21,7 +21,7 @@ interface CalculatorContextType {
       name : string,
       reading : number,
       amount : number,
-      id : number
+      id : string
     }[]
   }
   }) => Promise<Response>;
@@ -42,7 +42,7 @@ data
         name : string,
         reading : number,
         amount : number,
-        id : number
+        id : string
       }[]
     }
   }) => {

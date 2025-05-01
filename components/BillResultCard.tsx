@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-// @ts-ignore
+//  - html2pdf doesn't have type definitions
 import html2pdf from "html2pdf.js";
 import { BillResult } from "@/contexts/CarculatorContext";
 
@@ -29,54 +29,62 @@ export default function BillResultCard({ bill }: BillResultCardProps) {
 
   return (
     <div>
-
-   
-    <div
-      ref={billRef}
-      style={{
-        backgroundColor: "#f9fafb",
-        padding: "16px",
-        borderRadius: "8px",
-        fontFamily: "sans-serif",
-        color: "#1f2937", // text-gray-800
-        marginBottom: "20px",
-      }}
-    >
-      <h3 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "12px" }}>
-        {bill.name}
-      </h3>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <tbody>
-          <tr>
-            <td style={{ padding: "8px", fontWeight: "500" }}>Units Consumed</td>
-            <td style={{ padding: "8px" }}>{bill.reading.toFixed(2)}</td>
-          </tr>
-          <tr>
-            <td style={{ padding: "8px", fontWeight: "500" }}>Proportion</td>
-            <td style={{ padding: "8px" }}>
-              {(bill.proportion * 100).toFixed(2)}%
-            </td>
-          </tr>
-          <tr>
-            <td style={{ padding: "8px", fontWeight: "500" }}>Energy Charge</td>
-            <td style={{ padding: "8px" }}>₹{bill.energyCharge.toFixed(2)}</td>
-          </tr>
-          <tr>
-            <td style={{ padding: "8px", fontWeight: "500" }}>
-              Additional Charges
-            </td>
-            <td style={{ padding: "8px" }}>
-              ₹{(bill.totalBillAmount - bill.energyCharge).toFixed(2)}
-            </td>
-          </tr>
-          <tr style={{ backgroundColor: "#eff6ff" }}>
-            <td style={{ padding: "8px", fontWeight: "600" }}>Total Payable</td>
-            <td style={{ padding: "8px", fontWeight: "600" }}>
-              ₹{bill.totalBillAmount.toFixed(2)}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div
+        ref={billRef}
+        style={{
+          backgroundColor: "#f9fafb",
+          padding: "16px",
+          borderRadius: "8px",
+          fontFamily: "sans-serif",
+          color: "#1f2937", // text-gray-800
+          marginBottom: "20px",
+        }}
+      >
+        <h3
+          style={{ fontSize: "18px", fontWeight: "600", marginBottom: "12px" }}
+        >
+          {bill.name}
+        </h3>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <tbody>
+            <tr>
+              <td style={{ padding: "8px", fontWeight: "500" }}>
+                Units Consumed
+              </td>
+              <td style={{ padding: "8px" }}>{bill.reading.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td style={{ padding: "8px", fontWeight: "500" }}>Proportion</td>
+              <td style={{ padding: "8px" }}>
+                {(bill.proportion * 100).toFixed(2)}%
+              </td>
+            </tr>
+            <tr>
+              <td style={{ padding: "8px", fontWeight: "500" }}>
+                Energy Charge
+              </td>
+              <td style={{ padding: "8px" }}>
+                ₹{bill.energyCharge.toFixed(2)}
+              </td>
+            </tr>
+            <tr>
+              <td style={{ padding: "8px", fontWeight: "500" }}>
+                Additional Charges
+              </td>
+              <td style={{ padding: "8px" }}>
+                ₹{(bill.totalBillAmount - bill.energyCharge).toFixed(2)}
+              </td>
+            </tr>
+            <tr style={{ backgroundColor: "#eff6ff" }}>
+              <td style={{ padding: "8px", fontWeight: "600" }}>
+                Total Payable
+              </td>
+              <td style={{ padding: "8px", fontWeight: "600" }}>
+                ₹{bill.totalBillAmount.toFixed(2)}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       <button
         onClick={handlePrint}

@@ -26,7 +26,7 @@ export default async function page() {
     return notFound();
   }
   
-  const data = res?.flatmates;
+  const data  = res?.flatmates;
 
 
   return (

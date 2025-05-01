@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hash } from "bcrypt";
+import { toast } from "sonner";
 
 export async function POST(req: Request) {
   try {
@@ -66,7 +67,7 @@ export async function POST(req: Request) {
     await prisma.flatmateInvitation.delete({
       where: { id: invitation.id },
     });
-    
+    toast.success(`Welcome ${user.name} to the family!`);
     return NextResponse.json(
       { 
         message: "Account created successfully",

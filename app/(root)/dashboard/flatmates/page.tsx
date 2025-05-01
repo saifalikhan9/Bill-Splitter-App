@@ -24,6 +24,24 @@ export default function FlatmateList() {
   const router = useRouter()
   const isMobile = useIsMobile()
 
+  const fetchFlatmates = useCallback(async () => {
+    try {
+      const res = await fetch("/api/users")
+      const json = await res.json()
+
+      if (!res.ok || json.status !== 200) {
+        throw new Error(json.message || "Failed to fetch flatmates")
+      }
+
+      setFlatmates(json.data.flatmates)
+    } catch (err: unknown) {
+      const error = err as Error;
+      setError(error.message || "Something went wrong")
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
   // Check if user is authorized to view this page
   useEffect(() => {
     async function checkUserRole() {
@@ -50,24 +68,7 @@ export default function FlatmateList() {
     }
 
     checkUserRole()
-  }, [router])
-
-  const fetchFlatmates = useCallback(async () => {
-    try {
-      const res = await fetch("/api/users")
-      const json = await res.json()
-
-      if (!res.ok || json.status !== 200) {
-        throw new Error(json.message || "Failed to fetch flatmates")
-      }
-
-      setFlatmates(json.data.flatmates)
-    } catch (err: any) {
-      setError(err.message || "Something went wrong")
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  }, [router, fetchFlatmates])
 
   if (loading) {
     return (
