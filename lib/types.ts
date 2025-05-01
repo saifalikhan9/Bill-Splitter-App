@@ -49,7 +49,7 @@ export const createFlatmateSchema = () => {
 export interface billstype {
   id: number;
   createdAt: Date;
-  ownerId: number;
+  ownerId: string;
   masterReading: number;
   actualBill: number;
   details: {
@@ -58,7 +58,7 @@ export interface billstype {
     billId: number;
     reading: number;
     Amount: number;
-    userId: number;
+    userId: string;
   }[];
 }
 

@@ -64,7 +64,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     
     jwt: async ({ token, user, account }: {token: JWT, user?: User | AdapterUser | UserProps, account?: Account | null}) => {
-      if (user) {
+      if (user  && 'role' in user) {
         token.id = user.id;
         token.email = user.email;
         token.role = user.role; // This will pick up the OWNER role set by the default

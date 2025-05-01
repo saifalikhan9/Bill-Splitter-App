@@ -18,7 +18,7 @@ const Page = async () => {
   const { user } = await sessionAuth();
 
   const data = await prisma.bill.findMany({
-    where: { ownerId: user?.id},
+    where: { ownerId: user?.id },
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
@@ -31,17 +31,16 @@ const Page = async () => {
   });
 
   if (user?.role === "FLATMATE") {
-    const data = await prisma.billDetail.findMany({
+    const billDetailData = await prisma.billDetail.findMany({
       where: { userId: user?.id },
       orderBy: { createdAt: "desc" },
     });
-  
 
     return (
       <div className="relative w-full ">
         <div className="flex flex-col items-center space-y-2 mb-8">
           <p className="text-gray-800 text-xl font-semibold">
-            Welcome {`${user.name}`}! 
+            Welcome {`${user.name}`}!
           </p>
           <p className="text-gray-600">
             Here you can find your previous Electricity Bills.
@@ -59,15 +58,19 @@ const Page = async () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((m, i) => (
-                <TableRow key={i} >
+              {billDetailData.map((m, i) => (
+                <TableRow key={i}>
                   <TableCell>{m.billId}</TableCell>
-                  <TableCell>{m.createdAt.toLocaleDateString("default", {
-                        month: "long",
-                        year: "numeric",
-                      })}</TableCell>
+                  <TableCell>
+                    {m.createdAt.toLocaleDateString("default", {
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </TableCell>
                   <TableCell>{m.reading}</TableCell>
-                  <TableCell className="text-right">₹{m.Amount.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">
+                    ₹{m.Amount.toFixed(2)}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

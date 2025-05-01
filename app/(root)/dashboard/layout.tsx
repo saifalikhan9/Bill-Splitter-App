@@ -2,18 +2,17 @@ import { NavItem } from "@/components/nav-items";
 import { Home, Users2, User as UserIcon, PlusCircle } from "lucide-react";
 import React from "react";
 import { User } from "@/components/user";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { FloatingNav } from "@/components/ui/floating-navbar";
 import { Header } from "@/components/Header";
+import { sessionAuth } from "@/lib/sessionAuth";
 
 export default async function DashBoardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession(authOptions);
-  const userRole = session?.user?.role || "FLATMATE";
+   const {user} = await sessionAuth()
+  const userRole = user?.role || "FLATMATE";
 
   return (
     <main className="flex min-h-screen w-full flex-col ">

@@ -1,8 +1,19 @@
-
 import { prisma } from "@/lib/prisma";
 import { sessionAuth } from "@/lib/sessionAuth";
 import { NextRequest, NextResponse } from "next/server";
 
+interface BillDetail {
+  name: string;
+  reading: number;
+  amount: number;
+  id: string;
+}
+
+interface BillData {
+  masterReading: number;
+  actualBill: number;
+  details: BillDetail[];
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,7 +27,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { data } = await req.json();
+    const { data }: { data: BillData } = await req.json();
 
     // Validate request data
     if (!data) {
@@ -26,18 +37,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    
     const newBill = await prisma.bill.create({
       data: {
-        ownerId: (session.user.id),
-        masterReading : data.masterReading,
+        ownerId: session.user.id,
+        masterReading: data.masterReading,
         actualBill: data.actualBill,
         details: {
-          create: data.details.map(d => ({
+          create: data.details.map((d: BillDetail) => ({
             name: d.name,
             reading: d.reading,
             Amount: d.amount,
-            userId: ( d.id),
+            userId: d.id,
           })),
         },
       },
@@ -46,11 +56,10 @@ export async function POST(req: NextRequest) {
       },
     });
 
-
-const {name,email} = session.user
-if (!name || !email) {
-  throw new Error("email and name is not found")
-}
+    const { name, email } = session.user;
+    if (!name || !email) {
+      throw new Error("email and name is not found");
+    }
 
     return NextResponse.json({ bill: newBill }, { status: 201 });
   } catch (error) {
@@ -76,7 +85,7 @@ export async function GET() {
     }
 
     const bills = await prisma.bill.findMany({
-      where: { ownerId: (user.id) },
+      where: { ownerId: user.id },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,

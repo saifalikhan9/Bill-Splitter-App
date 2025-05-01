@@ -35,14 +35,19 @@ export async function PUT(req: Request) {
     }
 
     // Verify current password
-    const isPasswordValid = await compare(currentPassword, userData.password);
+    if (userData.password) {
+      const isPasswordValid = await compare(currentPassword, userData.password);
+      if (!isPasswordValid) {
+        return NextResponse.json(
+          { message: "Current password is incorrect" },
+          { status: 400 }
+        );
+      }
 
-    if (!isPasswordValid) {
-      return NextResponse.json(
-        { message: "Current password is incorrect" },
-        { status: 400 }
-      );
     }
+    
+
+   
 
     // Hash the new password
     const hashedPassword = await hash(newPassword, 12);

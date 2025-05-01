@@ -6,10 +6,10 @@ import { prisma } from "@/lib/prisma";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { user, status } = await sessionAuth();
-  const { id } = params;
+  const { id } = await params;
 
   if (!user && status === "unauthenticated") {
     return NextResponse.json({ message: "unauthorized", status: 404 });
@@ -38,7 +38,7 @@ export async function DELETE(
 
   // Delete the flatmate record
   await prisma.user.delete({
-    where: { id},
+    where: { id },
   });
 
   return NextResponse.json({
