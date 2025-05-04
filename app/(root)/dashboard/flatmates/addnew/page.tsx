@@ -95,7 +95,7 @@ export default function AddFlatmateForm() {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className=" w-full max-w-md mx-auto">
       <div className="mb-4">
         <Link href="/dashboard/flatmates">
           <Button variant="outline" size="sm">

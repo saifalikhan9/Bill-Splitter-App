@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sessionAuth } from "@/lib/sessionAuth";
 import crypto from "crypto";
+import { sendInvitaionEmail } from "@/lib/emailingService";
 
 // POST - Create a new invitation for a flatmate
 export async function POST(req: Request) {
@@ -60,13 +61,24 @@ export async function POST(req: Request) {
         ownerId: user.id,
       },
     });
+    const link = `${process.env.NEXT_PUBLIC_APP_URL}/accept-invitation?token=${token}`;
+    const send = await sendInvitaionEmail(email, name, link);
+    if (!send) {
+      console.log(send, "send invitation email error");
+      
+      return NextResponse.json(
+        { message: "Failed to send invitation email" },
+        { status: 500 }
+      );
+    }
+
 
     return NextResponse.json(
       {
         message: "Invitation created successfully",
         invitationToken: token,
         // Include invitation link that can be shared with the flatmate
-        invitationLink: `${process.env.NEXT_PUBLIC_APP_URL}/accept-invitation?token=${token}`,
+        invitationLink: link,
       },
       { status: 201 }
     );

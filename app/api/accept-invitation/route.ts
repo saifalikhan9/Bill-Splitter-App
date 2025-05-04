@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hash } from "bcrypt";
-import { toast } from "sonner";
 
 export async function POST(req: NextRequest) {
   try {
@@ -53,7 +52,7 @@ export async function POST(req: NextRequest) {
     const hashedPassword = await hash(password, 12);
     
     // Create the new user
-    const user = await prisma.user.create({
+      await prisma.user.create({
       data: {
         name: invitation.name,
         email: invitation.email,
@@ -67,7 +66,6 @@ export async function POST(req: NextRequest) {
     await prisma.flatmateInvitation.delete({
       where: { id: invitation.id },
     });
-    toast.success(`Welcome ${user.name} to the family!`);
     return NextResponse.json(
       { 
         message: "Account created successfully",

@@ -29,11 +29,12 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
+
       >
         <NextAuthProvider>
         <CalculatorProvider>
           <main className="bg-gradient-to-br from-slate-50 to-slate-500">{children}</main>
-          <Toaster />
+          <Toaster  />
           </CalculatorProvider>
         </NextAuthProvider>
       </body>

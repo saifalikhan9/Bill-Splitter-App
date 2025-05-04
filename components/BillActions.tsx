@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Button } from "./ui/button";
-import { Loader2, Trash, MoreHorizontal, Eye } from "lucide-react";
+import { Loader2, Trash, MoreHorizontal, Eye, Download } from "lucide-react";
 import { toast } from "sonner";
 import {
   DropdownMenu,
@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import Link from "next/link";
 
+
 interface BillActionsProps {
   billId: number;
   onDelete: () => void;
@@ -31,55 +32,110 @@ export default function BillActions({ billId, onDelete }: BillActionsProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+  // Control dropdown open state explicitly
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const handleDelete = async () => {
+    setIsDeleting(true);
     try {
-      setIsDeleting(true);
-      const response = await fetch(`/api/bills/${billId}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to delete bill");
+      const res = await fetch(`/api/bills/${billId}`, { method: "DELETE" });
+      if (!res.ok) {
+        const { message } = await res.json();
+        throw new Error(message || "Failed to delete bill");
       }
-
       toast.success("Bill deleted successfully");
-      onDelete(); // Refresh the bill list
-      //
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An unknown error occurred");
+      onDelete();
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err?.message || "Unknown error");
       }
+      console.error("Error deleting bill:", err);
     } finally {
       setIsDeleting(false);
       setShowDeleteDialog(false);
     }
   };
+  const handleDownload = async () => {
+    try {
+      const res = await fetch(`/api/bills/download`, {
+        method: "POST",
+        body: JSON.stringify({
+          billId: billId,
+        }),
+      });
+
+      if (!res.ok) {
+        const { message } = await res.json();
+        throw new Error(message || "Failed to download bill");
+      }
+
+      // Convert the response to a Blob
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      // Trigger file download
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Bill_${Date.now()}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      toast.success("Bill downloaded successfully");
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error?.message || "Unknown error");
+        console.log(error, "error");
+
+        console.error("Error downloading PDF:", error.message);
+      }
+      console.error("Error downloading PDF:", error);
+    }
+  };
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
+          <Button
+            variant="ghost"
+            className="h-8 w-8 p-0"
+            aria-label="Bill actions"
+          >
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <Link href={`/dashboard/bills/${billId}`}>
-            <DropdownMenuItem>
+          {/* View DETAILS */}
+          <DropdownMenuItem asChild>
+            <Link href={`/dashboard/bills/${billId}`}>
               <Eye className="mr-2 h-4 w-4" />
-              <span>View Details</span>
-            </DropdownMenuItem>
-          </Link>
+              View Details
+            </Link>
+          </DropdownMenuItem>
+
+          {/* Download Bill */}
+          <DropdownMenuItem>
+            <Download className="mr-2 h-4 w-4" />
+            <Button
+              variant={"ghost"}
+              size={"sm"}
+              className="font-normal m-0 p-0"
+              onClick={handleDownload}
+            >
+              Download
+            </Button>
+          </DropdownMenuItem>
+          {/* DELETE */}
           <DropdownMenuItem
             className="text-destructive focus:text-destructive"
-            onClick={() => setShowDeleteDialog(true)}
+            onClick={() => {
+              // first close the menu so it doesn't linger
+              setMenuOpen(false);
+              // then open the delete confirmation
+              setShowDeleteDialog(true);
+            }}
           >
             <Trash className="mr-2 h-4 w-4" />
-            <span>Delete</span>
+            Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -87,21 +143,18 @@ export default function BillActions({ billId, onDelete }: BillActionsProps) {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              bill and all its associated data.
+              This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
+
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                e.preventDefault();
-                handleDelete();
-              }}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDelete}
               disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {isDeleting ? (
                 <>

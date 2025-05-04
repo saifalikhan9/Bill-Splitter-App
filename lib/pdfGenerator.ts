@@ -87,11 +87,17 @@ export const generateBillPDF = async (
         rowTop += 20;
       });
       
-      // Add footer
+      if (doc.y > doc.page.height - 100) {
+        console.log("Adding new page for footer");
+        
+        doc.addPage(); // Add new page if too close to bottom
+      }
+
+      // Footer
       doc.fontSize(10).text(
         `This bill was generated automatically on ${new Date().toLocaleDateString()}.`,
         50,
-        doc.page.height - 50,
+        doc.page.height - 100,
         { align: 'center' }
       );
       

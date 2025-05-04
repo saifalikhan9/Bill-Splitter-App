@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useCalculator } from "@/contexts/CarculatorContext";
 import { toast } from "sonner";
 import { UserProps } from "@/app/api/auth/[...nextauth]/authOptions";
+import { useRouter } from "next/navigation";
 
 interface FlatDetails {
   name: string;
@@ -29,10 +30,11 @@ export default function Calculator({
   const [masterReading, setMasterReading] = useState("");
   const [flats, setFlats] = useState<FlatDetails[]>([]);
   const [actualBill, setActualBill] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const { setResult, saveResultToDB } = useCalculator();
+  const router = useRouter();
 
-  // Initialize flat readings from passed-in data
   useEffect(() => {
     const initialFlats = data.map((user) => ({
       name: user.name,
@@ -48,38 +50,36 @@ export default function Calculator({
   };
 
   const handleCalculate = async () => {
-    // Validate inputs
+    setIsLoading(true);
+
     if (!masterReading || !actualBill) {
-      toast.error(
-        "Please fill in both the master reading and the bill amount."
-      );
+      toast.error("Please fill in both the master reading and the bill amount.");
+      setIsLoading(false);
       return;
     }
+
     const master = parseFloat(masterReading);
     const actual = parseFloat(actualBill);
     if (isNaN(master)) {
       toast.error("Please enter a valid master reading.");
+      setIsLoading(false);
       return;
     }
     if (isNaN(actual)) {
       toast.error("Please enter a valid actual bill amount.");
+      setIsLoading(false);
       return;
     }
 
-    // Compute totals and individual bills
     const flatReadings = flats.map((f) => f.reading);
-    const totalFlatUnits = flatReadings.reduce(
-      (sum, reading) => sum + reading,
-      0
-    );
+    const totalFlatUnits = flatReadings.reduce((sum, reading) => sum + reading, 0);
     if (totalFlatUnits > master) {
       toast.error("Sub-meter readings exceed master reading!");
+      setIsLoading(false);
       return;
     }
 
-    const billAmountFlatmates = flatReadings.map(
-      (unit) => (actual * unit) / master
-    );
+    const billAmountFlatmates = flatReadings.map((unit) => (actual * unit) / master);
     const ownerUnits = master - totalFlatUnits;
     const billOwner = (actual * ownerUnits) / master;
 
@@ -95,10 +95,8 @@ export default function Calculator({
       id: ids[index],
     }));
 
-    // Set the result in context (if needed later)
     setResult(individualBills);
 
-    // Save the computed bills directly rather than relying on state update timing
     try {
       const res = await saveResultToDB({
         data: {
@@ -107,10 +105,9 @@ export default function Calculator({
           details: [...individualBills],
         },
       });
-      if (!res?.ok) {
-        throw new Error("Server responded with an error.");
-      }
+      if (!res?.ok) throw new Error("Server responded with an error.");
       toast.success("Success");
+      setTimeout(() => router.push("/dashboard"), 2000);
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error("Error saving result:", error.message);
@@ -119,6 +116,8 @@ export default function Calculator({
         console.error("Error saving result:", error);
         toast.error("An unknown error occurred while saving the result.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -135,11 +134,10 @@ export default function Calculator({
             onChange={(e) => setActualBill(e.target.value)}
             step="0.01"
             min="0"
+            disabled={isLoading}
           />
 
-          <h2 className="text-xl font-semibold">
-            Master Meter Reading (units):
-          </h2>
+          <h2 className="text-xl font-semibold">Master Meter Reading (units):</h2>
           <Input
             type="number"
             placeholder="Enter the master meter reading"
@@ -148,6 +146,7 @@ export default function Calculator({
             onChange={(e) => setMasterReading(e.target.value)}
             step="0.01"
             min="0"
+            disabled={isLoading}
           />
 
           <h2 className="text-xl font-semibold">Enter Flat Readings:</h2>
@@ -163,6 +162,7 @@ export default function Calculator({
                   }
                   step="1"
                   min="0"
+                  disabled={isLoading}
                 />
               </div>
             ))}
@@ -172,8 +172,9 @@ export default function Calculator({
             variant="default"
             onClick={handleCalculate}
             className="w-full mt-4"
+            disabled={isLoading}
           >
-            Calculate Bill
+            {isLoading ? "Calculating..." : "Calculate Bill"}
           </Button>
         </CardContent>
       </Card>

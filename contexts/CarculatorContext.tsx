@@ -1,6 +1,4 @@
 "use client";
-
-import { billstype } from "@/lib/types";
 import { createContext, useContext, useState, ReactNode } from "react";
 
 export interface BillResult {
@@ -47,8 +45,6 @@ data
     }
   }) => {
     try {
-      console.log(data);
-      
       const res = await fetch("/api/bills", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
