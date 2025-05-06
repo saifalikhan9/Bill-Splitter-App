@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { billstype } from "@/lib/types";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 const Page = async () => {
   const { user } = await sessionAuth();
