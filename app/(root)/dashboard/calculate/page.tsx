@@ -30,7 +30,7 @@ export default async function page() {
 
 
   return (
-    <div className="flex flex-col justify-center w-full md:max-w-xl items-center m-3 p-3">
+    <div className="">
       <Calculator data={data} Owner={user} />
     </div>
   );

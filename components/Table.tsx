@@ -20,10 +20,12 @@ import { billstype } from "@/lib/types";
 import BillActions from "./BillActions";
 import { useRouter } from "next/navigation";
 
+
+
 export const TableComponent = ({
   bills: initialBills,
 }: {
-  bills: billstype[];
+  bills: billstype[] ;
 }) => {
   const [bills, setBills] = useState<billstype[]>(initialBills);
   const router = useRouter();

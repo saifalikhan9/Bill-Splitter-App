@@ -6,10 +6,10 @@ enum StatusType {
   Unauthenticated = "unauthenticated",
 }
 export const sessionAuth = async () => {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return {status : StatusType.Unauthenticated , user : null}
+  const {user} = await getServerSession(authOptions) as {user : UserProps};
+  if (user.role === "FLATMATE") {  
+    return {status : StatusType.Unauthenticated , user : user as UserProps}
   }
 
-  return {status : StatusType.Authenticated , user : session.user as UserProps }
+  return {status : StatusType.Authenticated , user :user as UserProps }
 };

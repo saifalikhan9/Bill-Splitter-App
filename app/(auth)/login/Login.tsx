@@ -48,7 +48,7 @@ const SignInPage = () => {
   return (
     <>
       <AuthenticatedUser />
-      <div className="w-full flex justify-center items-center min-h-screen">
+      <div className="w-full  flex justify-center items-center min-h-screen">
         <AuthForm type="signin" onSubmitForm={handleSubmit} />
       </div>
     </>

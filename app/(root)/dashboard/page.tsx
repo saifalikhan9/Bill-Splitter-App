@@ -13,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { billstype } from "@/lib/types";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 const Page = async () => {
   const { user } = await sessionAuth();
@@ -46,36 +47,37 @@ const Page = async () => {
             Here you can find your previous Electricity Bills.
           </p>
         </div>
-
-        <div className="relative w-full max-w-4xl mx-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">Bill ID</TableHead>
-                <TableHead>Month</TableHead>
-                <TableHead>Units</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {billDetailData.map((m, i) => (
-                <TableRow key={i}>
-                  <TableCell>{m.billId}</TableCell>
-                  <TableCell>
-                    {m.createdAt.toLocaleDateString("default", {
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </TableCell>
-                  <TableCell>{m.reading}</TableCell>
-                  <TableCell className="text-right">
-                    ₹{m.Amount.toFixed(2)}
-                  </TableCell>
+        <Card>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[100px]">Bill ID</TableHead>
+                  <TableHead>Month</TableHead>
+                  <TableHead>Units</TableHead>
+                  <TableHead className="text-right">Amount</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {billDetailData.map((m, i) => (
+                  <TableRow key={i}>
+                    <TableCell>{m.billId}</TableCell>
+                    <TableCell>
+                      {m.createdAt.toLocaleDateString("default", {
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </TableCell>
+                    <TableCell>{m.reading}</TableCell>
+                    <TableCell className="text-right">
+                      ₹{m.Amount.toFixed(2)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
     );
   }

@@ -68,3 +68,13 @@ name : string;
 email : string;
 role : "OWNER"|"FLATMATE";
 }
+
+export interface billDetail  {
+  billId: number;
+  name: string;
+  id: number;
+  userId: string;
+  createdAt: Date;
+  reading: number;
+  Amount: number;
+}
