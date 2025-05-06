@@ -166,13 +166,15 @@ export default function Calculator({
                 />
               </div>
             ))}
+            {flats.length===0 && <><p className="text-red-500">Please add flatmates first</p></>}
           </div>
 
+          
           <Button
             variant="default"
             onClick={handleCalculate}
             className="w-full mt-4"
-            disabled={isLoading}
+            disabled={isLoading || flats.length===0}
           >
             {isLoading ? "Calculating..." : "Calculate Bill"}
           </Button>
